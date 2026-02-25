@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/nhosoya/claude-code-share/internal/server"
 )
@@ -38,6 +39,11 @@ func defaultLogDir() string {
 	return filepath.Join(home, ".claude", "projects")
 }
 
+type lanAddr struct {
+	IP    string
+	Iface string
+}
+
 func printStartupInfo(addr string, port int, logDir string) {
 	fmt.Printf("claude-code-share\n")
 	fmt.Printf("  Log directory: %s\n", logDir)
@@ -45,19 +51,36 @@ func printStartupInfo(addr string, port int, logDir string) {
 
 	addrs := lanAddresses()
 	for _, a := range addrs {
-		fmt.Printf("  Network:       http://%s:%d\n", a, port)
+		fmt.Printf("  Network:       http://%s:%d (%s)\n", a.IP, port, a.Iface)
 	}
 	fmt.Println()
 }
 
-func lanAddresses() []string {
-	var addrs []string
+// isPhysicalInterface returns true for likely physical network interfaces
+// (Wi-Fi, Ethernet) and false for virtual ones (VPN, Docker, etc.).
+func isPhysicalInterface(name string) bool {
+	// macOS: en0 = Wi-Fi, en1-enN = Ethernet/Thunderbolt
+	// Linux: eth0, wlan0, enpXsY, wlpXsY
+	prefixes := []string{"en", "eth", "wlan", "enp", "wlp"}
+	for _, p := range prefixes {
+		if strings.HasPrefix(name, p) {
+			return true
+		}
+	}
+	return false
+}
+
+func lanAddresses() []lanAddr {
+	var addrs []lanAddr
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return addrs
 	}
 	for _, iface := range ifaces {
 		if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagLoopback != 0 {
+			continue
+		}
+		if !isPhysicalInterface(iface.Name) {
 			continue
 		}
 		ifAddrs, err := iface.Addrs()
@@ -73,7 +96,7 @@ func lanAddresses() []string {
 			if ip == nil {
 				continue
 			}
-			addrs = append(addrs, ip.String())
+			addrs = append(addrs, lanAddr{IP: ip.String(), Iface: iface.Name})
 		}
 	}
 	return addrs

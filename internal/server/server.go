@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/nhosoya/claude-code-share/internal/logparser"
 	"github.com/nhosoya/claude-code-share/internal/templates"
 )
 
@@ -19,6 +20,7 @@ type Server struct {
 func New(logDir string) *Server {
 	funcMap := template.FuncMap{
 		"formatToolInput": formatToolInput,
+		"hasText":         hasText,
 	}
 
 	// Parse each page template together with the layout so that
@@ -58,6 +60,16 @@ func (s *Server) render(w http.ResponseWriter, page string, data interface{}) {
 		slog.Error("template render error", "page", page, "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+}
+
+// hasText returns true if an assistant message contains at least one text block.
+func hasText(blocks []logparser.ContentBlock) bool {
+	for _, b := range blocks {
+		if b.Type == "text" && b.Text != "" {
+			return true
+		}
+	}
+	return false
 }
 
 func formatToolInput(input map[string]interface{}) string {

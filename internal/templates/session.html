@@ -4,33 +4,49 @@
   <a href="/">Home</a> &gt; <a href="/projects/{{.Slug}}">{{.Path}}</a> &gt; Session
 </nav>
 <div class="page-header">{{.SessionID}}</div>
-<div class="chat-container">
+<div class="chat-container" id="chat">
   <div class="stats">
-    {{if .Conversation.Model}}{{.Conversation.Model}} &middot; {{end}}
-    In: {{.Conversation.TotalInput}} tokens &middot;
-    Out: {{.Conversation.TotalOutput}} tokens
+    <span class="stats-info">
+      {{if .Conversation.Model}}{{.Conversation.Model}} &middot; {{end}}
+      In: {{.Conversation.TotalInput}} tokens &middot;
+      Out: {{.Conversation.TotalOutput}} tokens
+    </span>
+    <button class="toggle-btn" id="toggleTools" onclick="toggleTools()">Show tools</button>
   </div>
   {{range .Conversation.Entries}}
-  <div class="message-row {{.Type}}">
-    {{if eq .Type "user"}}
+  {{if eq .Type "user"}}
+    {{if .Message.Content.Text}}
+    <div class="message-row user">
       <div class="avatar user-avatar">U</div>
-    {{else}}
-      <div class="avatar assistant-avatar">C</div>
+      <div class="bubble-wrap">
+        <div class="bubble">
+          <div class="message-content">{{.Message.Content.Text}}</div>
+          <span class="timestamp">{{.Timestamp.Format "15:04"}}</span>
+        </div>
+      </div>
+    </div>
+    {{else if .Message.Content.Blocks}}
+    <div class="message-row user tool-message">
+      <div class="avatar user-avatar">U</div>
+      <div class="bubble-wrap">
+        <div class="bubble">
+          <details class="tool-use">
+            <summary>Tool results ({{len .Message.Content.Blocks}} item{{if ne (len .Message.Content.Blocks) 1}}s{{end}})</summary>
+            {{range .Message.Content.Blocks}}
+              <div class="tool-result">[{{.Type}}] {{.ToolUseID}}</div>
+            {{end}}
+          </details>
+          <span class="timestamp">{{.Timestamp.Format "15:04"}}</span>
+        </div>
+      </div>
+    </div>
     {{end}}
-    <div class="bubble-wrap">
-      <div class="bubble">
-        {{if eq .Type "user"}}
-          {{if .Message.Content.Text}}
-            <div class="message-content">{{.Message.Content.Text}}</div>
-          {{else if .Message.Content.Blocks}}
-            <details class="tool-use">
-              <summary>Tool results ({{len .Message.Content.Blocks}} item{{if ne (len .Message.Content.Blocks) 1}}s{{end}})</summary>
-              {{range .Message.Content.Blocks}}
-                <div class="tool-result">[{{.Type}}] {{.ToolUseID}}</div>
-              {{end}}
-            </details>
-          {{end}}
-        {{else if eq .Type "assistant"}}
+  {{else if eq .Type "assistant"}}
+    {{if hasText .Message.Content.Blocks}}
+    <div class="message-row assistant">
+      <div class="avatar assistant-avatar">C</div>
+      <div class="bubble-wrap">
+        <div class="bubble">
           {{range .Message.Content.Blocks}}
             {{if eq .Type "text"}}
               <div class="message-content">{{.Text}}</div>
@@ -41,11 +57,39 @@
               </details>
             {{end}}
           {{end}}
-        {{end}}
-        <span class="timestamp">{{.Timestamp.Format "15:04"}}</span>
+          <span class="timestamp">{{.Timestamp.Format "15:04"}}</span>
+        </div>
       </div>
     </div>
-  </div>
+    {{else}}
+    <div class="message-row assistant tool-message">
+      <div class="avatar assistant-avatar">C</div>
+      <div class="bubble-wrap">
+        <div class="bubble">
+          {{range .Message.Content.Blocks}}
+            {{if eq .Type "tool_use"}}
+              <details class="tool-use">
+                <summary>{{.Name}}</summary>
+                <pre>{{formatToolInput .Input}}</pre>
+              </details>
+            {{end}}
+          {{end}}
+          <span class="timestamp">{{.Timestamp.Format "15:04"}}</span>
+        </div>
+      </div>
+    </div>
+    {{end}}
+  {{end}}
   {{end}}
 </div>
+<script>
+function toggleTools() {
+  var chat = document.getElementById('chat');
+  var btn = document.getElementById('toggleTools');
+  chat.classList.toggle('show-tools');
+  var active = chat.classList.contains('show-tools');
+  btn.textContent = active ? 'Hide tools' : 'Show tools';
+  btn.classList.toggle('active', active);
+}
+</script>
 {{end}}

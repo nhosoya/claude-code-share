@@ -1,10 +1,13 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"html/template"
 	"log/slog"
 	"net/http"
+
+	"github.com/yuin/goldmark"
 
 	"github.com/nhosoya/claude-code-share/internal/logparser"
 	"github.com/nhosoya/claude-code-share/internal/templates"
@@ -21,6 +24,7 @@ func New(logDir string) *Server {
 	funcMap := template.FuncMap{
 		"formatToolInput": formatToolInput,
 		"hasText":         hasText,
+		"renderMarkdown":  renderMarkdown,
 	}
 
 	// Parse each page template together with the layout so that
@@ -70,6 +74,14 @@ func hasText(blocks []logparser.ContentBlock) bool {
 		}
 	}
 	return false
+}
+
+func renderMarkdown(s string) template.HTML {
+	var buf bytes.Buffer
+	if err := goldmark.Convert([]byte(s), &buf); err != nil {
+		return template.HTML(template.HTMLEscapeString(s))
+	}
+	return template.HTML(buf.String())
 }
 
 func formatToolInput(input map[string]interface{}) string {

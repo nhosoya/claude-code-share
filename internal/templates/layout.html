@@ -127,10 +127,55 @@
     display: block;
   }
   .message-content {
-    white-space: pre-wrap;
     word-wrap: break-word;
-    font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
     font-size: 13px;
+    line-height: 1.5;
+  }
+  .message-content.markdown p { margin: 0.3em 0; }
+  .message-content.markdown p:first-child { margin-top: 0; }
+  .message-content.markdown p:last-child { margin-bottom: 0; }
+  .message-content.markdown h1,
+  .message-content.markdown h2,
+  .message-content.markdown h3,
+  .message-content.markdown h4 {
+    margin: 0.5em 0 0.25em;
+    line-height: 1.3;
+  }
+  .message-content.markdown h1 { font-size: 1.2em; }
+  .message-content.markdown h2 { font-size: 1.1em; }
+  .message-content.markdown h3 { font-size: 1.05em; }
+  .message-content.markdown ul,
+  .message-content.markdown ol {
+    margin: 0.3em 0;
+    padding-left: 1.5em;
+  }
+  .message-content.markdown li { margin: 0.15em 0; }
+  .message-content.markdown code {
+    background: rgba(0,0,0,0.06);
+    padding: 0.15em 0.35em;
+    border-radius: 3px;
+    font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+    font-size: 0.9em;
+  }
+  .message-content.markdown pre {
+    background: var(--code-bg);
+    padding: 0.5rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0.4em 0;
+  }
+  .message-content.markdown pre code {
+    background: none;
+    padding: 0;
+    font-size: 12px;
+  }
+  .message-content.markdown a { color: var(--accent); }
+  .message-content.markdown strong { font-weight: 600; }
+  .message-content.markdown blockquote {
+    border-left: 3px solid var(--border);
+    padding-left: 0.6em;
+    color: var(--muted);
+    margin: 0.3em 0;
   }
   .tool-use { margin-top: 0.4rem; }
   .tool-use summary {

@@ -18,7 +18,7 @@
   {{if eq .Type "user"}}
     {{if .Message.Content.Text}}
     <div class="message-row user">
-      <div class="avatar user-avatar">U</div>
+      <div class="avatar user-avatar"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
       <div class="bubble-wrap">
         <div class="bubble">
           <div class="message-content">{{.Message.Content.Text}}</div>
@@ -28,7 +28,7 @@
     </div>
     {{else if .Message.Content.Blocks}}
     <div class="message-row user tool-message">
-      <div class="avatar user-avatar">U</div>
+      <div class="avatar user-avatar"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
       <div class="bubble-wrap">
         <div class="bubble">
           <details class="tool-use">
@@ -45,7 +45,7 @@
   {{else if eq .Type "assistant"}}
     {{if hasText .Message.Content.Blocks}}
     <div class="message-row assistant">
-      <div class="avatar assistant-avatar">C</div>
+      <div class="avatar assistant-avatar"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2L9.2 9.2 2 12l7.2 2.8L12 22l2.8-7.2L22 12l-7.2-2.8z"/></svg></div>
       <div class="bubble-wrap">
         <div class="bubble">
           {{range .Message.Content.Blocks}}
@@ -64,7 +64,7 @@
     </div>
     {{else}}
     <div class="message-row assistant tool-message">
-      <div class="avatar assistant-avatar">C</div>
+      <div class="avatar assistant-avatar"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2L9.2 9.2 2 12l7.2 2.8L12 22l2.8-7.2L22 12l-7.2-2.8z"/></svg></div>
       <div class="bubble-wrap">
         <div class="bubble">
           {{range .Message.Content.Blocks}}

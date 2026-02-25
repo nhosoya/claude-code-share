@@ -12,6 +12,7 @@
       Out: {{.Conversation.TotalOutput}} tokens
     </span>
     <button class="toggle-btn" id="toggleTools" onclick="toggleTools()">Show tools</button>
+    <button class="toggle-btn" id="screenshotBtn" onclick="copyScreenshot()">Copy screenshot</button>
   </div>
   {{range .Conversation.Entries}}
   {{if eq .Type "user"}}
@@ -82,6 +83,7 @@
   {{end}}
   {{end}}
 </div>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
 function toggleTools() {
   var chat = document.getElementById('chat');
@@ -90,6 +92,45 @@ function toggleTools() {
   var active = chat.classList.contains('show-tools');
   btn.textContent = active ? 'Hide tools' : 'Show tools';
   btn.classList.toggle('active', active);
+}
+
+function copyScreenshot() {
+  var btn = document.getElementById('screenshotBtn');
+  var chat = document.getElementById('chat');
+  btn.textContent = 'Capturing...';
+  btn.disabled = true;
+
+  // Hide buttons during capture
+  var stats = chat.querySelector('.stats');
+  stats.style.display = 'none';
+
+  html2canvas(chat, { backgroundColor: null, scale: 2 }).then(function(canvas) {
+    stats.style.display = '';
+    canvas.toBlob(function(blob) {
+      navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]).then(function() {
+        btn.textContent = 'Copied!';
+        setTimeout(function() {
+          btn.textContent = 'Copy screenshot';
+          btn.disabled = false;
+        }, 2000);
+      }).catch(function() {
+        btn.textContent = 'Failed';
+        setTimeout(function() {
+          btn.textContent = 'Copy screenshot';
+          btn.disabled = false;
+        }, 2000);
+      });
+    }, 'image/png');
+  }).catch(function() {
+    stats.style.display = '';
+    btn.textContent = 'Failed';
+    setTimeout(function() {
+      btn.textContent = 'Copy screenshot';
+      btn.disabled = false;
+    }, 2000);
+  });
 }
 </script>
 {{end}}

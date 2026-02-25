@@ -1,0 +1,21 @@
+{{define "title"}}{{.Path}}{{end}}
+{{define "content"}}
+<nav class="breadcrumb"><a href="/">Home</a> &gt; {{.Path}}</nav>
+<h1>{{.Path}}</h1>
+{{if .Sessions}}
+<ul class="session-list">
+{{range .Sessions}}
+  <li>
+    <a href="/sessions/{{$.Slug}}/{{.ID}}">{{if .FirstMessage}}{{.FirstMessage}}{{else}}(empty session){{end}}</a>
+    <div class="meta">
+      {{.Timestamp.Format "2006-01-02 15:04:05"}} &middot;
+      {{.MessageCount}} message{{if ne .MessageCount 1}}s{{end}}
+      {{if .Model}}&middot; {{.Model}}{{end}}
+    </div>
+  </li>
+{{end}}
+</ul>
+{{else}}
+<p>No sessions found.</p>
+{{end}}
+{{end}}

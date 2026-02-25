@@ -1,7 +1,8 @@
 {{define "title"}}{{.Path}}{{end}}
 {{define "content"}}
 <nav class="breadcrumb"><a href="/">Home</a> &gt; {{.Path}}</nav>
-<h1>{{.Path}}</h1>
+<div class="page-header">{{.Path}}</div>
+<div class="list-page">
 {{if .Sessions}}
 <ul class="session-list">
 {{range .Sessions}}
@@ -18,4 +19,5 @@
 {{else}}
 <p>No sessions found.</p>
 {{end}}
+</div>
 {{end}}

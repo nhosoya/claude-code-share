@@ -1,6 +1,7 @@
 {{define "title"}}Projects{{end}}
 {{define "content"}}
-<h1>Projects</h1>
+<div class="page-header">Projects</div>
+<div class="list-page">
 {{if .Projects}}
 <ul class="project-list">
 {{range .Projects}}
@@ -13,4 +14,5 @@
 {{else}}
 <p>No projects found.</p>
 {{end}}
+</div>
 {{end}}

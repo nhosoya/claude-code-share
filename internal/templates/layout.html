@@ -7,38 +7,49 @@
 <title>{{template "title" .}} - claude-code-share</title>
 <style>
   :root {
-    --bg: #fafafa;
+    --bg: #7494c0;
+    --chat-bg: #7494c0;
     --fg: #1a1a1a;
-    --muted: #666;
-    --border: #ddd;
-    --user-bg: #e8f0fe;
-    --assistant-bg: #f0f0f0;
+    --muted: #888;
+    --border: #ccc;
+    --user-bg: #8de055;
+    --assistant-bg: #fff;
     --accent: #2563eb;
-    --code-bg: #f5f5f5;
+    --code-bg: #f0f0f0;
+    --page-bg: #fafafa;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 14px;
     line-height: 1.6;
     color: var(--fg);
-    background: var(--bg);
+    background: var(--page-bg);
     max-width: 960px;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 0;
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   nav.breadcrumb {
-    padding: 0.5rem 0;
-    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0;
     font-size: 13px;
-    color: var(--muted);
+    color: #fff;
+    background: #5b7aa5;
   }
-  nav.breadcrumb a { color: var(--muted); }
+  nav.breadcrumb a { color: #dde8f5; }
   h1 { font-size: 1.3rem; margin-bottom: 1rem; }
+  .page-header {
+    background: #5b7aa5;
+    color: #fff;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
   .project-list, .session-list {
     list-style: none;
+    padding: 0 1rem;
   }
   .project-list li, .session-list li {
     border-bottom: 1px solid var(--border);
@@ -48,55 +59,117 @@
     border-bottom: none;
   }
   .meta { font-size: 12px; color: var(--muted); margin-top: 0.25rem; }
-  .summary { margin-top: 0.25rem; color: var(--fg); }
-  .message {
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
+  .list-page { padding: 1rem; }
+  .chat-container {
+    background: var(--chat-bg);
+    padding: 1rem;
+    min-height: 50vh;
+  }
+  .message-row {
+    display: flex;
+    margin-bottom: 0.75rem;
+    align-items: flex-end;
+  }
+  .message-row.user {
+    flex-direction: row-reverse;
+  }
+  .message-row.assistant {
+    flex-direction: row;
+  }
+  .avatar {
+    width: 36px;
+    height: 36px;
     border-radius: 6px;
-    overflow-x: auto;
-  }
-  .message.user { background: var(--user-bg); }
-  .message.assistant { background: var(--assistant-bg); }
-  .message-role {
-    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    color: #fff;
     font-weight: bold;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.25rem;
   }
-  .message-content { white-space: pre-wrap; word-wrap: break-word; }
+  .avatar.user-avatar {
+    background: #4a9c2e;
+    margin-left: 8px;
+  }
+  .avatar.assistant-avatar {
+    background: #6b7280;
+    margin-right: 8px;
+  }
+  .bubble-wrap {
+    max-width: 75%;
+    display: flex;
+    flex-direction: column;
+  }
+  .message-row.user .bubble-wrap {
+    align-items: flex-end;
+  }
+  .message-row.assistant .bubble-wrap {
+    align-items: flex-start;
+  }
+  .bubble {
+    padding: 0.6rem 0.8rem;
+    border-radius: 14px;
+    overflow-x: auto;
+    position: relative;
+    word-break: break-word;
+  }
+  .message-row.user .bubble {
+    background: var(--user-bg);
+    border-bottom-right-radius: 4px;
+  }
+  .message-row.assistant .bubble {
+    background: var(--assistant-bg);
+    border-bottom-left-radius: 4px;
+  }
+  .bubble .timestamp {
+    font-size: 10px;
+    color: rgba(0,0,0,0.4);
+    margin-top: 0.25rem;
+    display: block;
+  }
+  .message-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+    font-size: 13px;
+  }
+  .tool-use { margin-top: 0.4rem; }
   .tool-use summary {
     cursor: pointer;
     font-weight: bold;
-    padding: 0.25rem 0;
+    padding: 0.2rem 0;
     color: var(--accent);
-    font-size: 13px;
+    font-size: 12px;
   }
   .tool-use pre {
     background: var(--code-bg);
     padding: 0.5rem;
-    border-radius: 4px;
+    border-radius: 6px;
     overflow-x: auto;
-    font-size: 12px;
+    font-size: 11px;
     margin-top: 0.25rem;
+    font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
   }
   .tool-result {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted);
-    padding: 0.25rem 0;
+    padding: 0.15rem 0;
   }
   .stats {
-    background: var(--code-bg);
+    background: rgba(0,0,0,0.15);
+    color: #fff;
     padding: 0.5rem 0.75rem;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 12px;
     margin-bottom: 1rem;
-    color: var(--muted);
+    text-align: center;
   }
-  .timestamp { font-size: 11px; color: var(--muted); }
   @media (max-width: 600px) {
-    body { font-size: 13px; padding: 0.5rem; }
-    .message { padding: 0.5rem; }
+    body { font-size: 13px; }
+    .bubble-wrap { max-width: 85%; }
+    .bubble { padding: 0.5rem 0.6rem; }
+    .avatar { width: 30px; height: 30px; font-size: 14px; }
   }
 </style>
 </head>

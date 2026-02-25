@@ -2,6 +2,8 @@
 
 A simple HTTP server that reads Claude Code conversation logs (JSONL) and serves them as a browsable web UI for team sharing.
 
+![Conversation View](screenshots/session-view.png)
+
 ## Install
 
 ```bash
@@ -29,8 +31,6 @@ go build -o claude-code-share .
 ./claude-code-share --log-dir /path/to/claude/projects
 ```
 
-### Flags
-
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--port` | `3333` | HTTP server port |
@@ -39,33 +39,14 @@ go build -o claude-code-share .
 
 ## Screenshots
 
-### Project List
-
-![Project List](screenshots/project-list.png)
-
-### Session List
-
-![Session List](screenshots/session-list.png)
-
-### Conversation View
-
-![Conversation View](screenshots/session-view.png)
-
-## Pages
-
-- **`/`** — Project list with session counts and last activity
-- **`/projects/{slug}`** — Session list for a project
-- **`/sessions/{slug}/{sessionId}`** — Full conversation view with collapsible tool calls
+| Project List | Session List |
+|:---:|:---:|
+| ![Project List](screenshots/project-list.png) | ![Session List](screenshots/session-list.png) |
 
 ## Development
 
 ```bash
-# Run tests
-go test ./...
-
-# Format code
-gofmt -w .
-
-# Build
-go build -o claude-code-share .
+go test ./...   # Run tests
+gofmt -w .      # Format code
+go build .      # Build
 ```

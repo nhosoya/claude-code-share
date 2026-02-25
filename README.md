@@ -37,6 +37,20 @@ go build -o claude-code-share .
 | `--host` | `0.0.0.0` | HTTP server host (LAN-accessible by default) |
 | `--log-dir` | `~/.claude/projects` | Path to Claude Code projects directory |
 
+## Screenshots
+
+### Project List
+
+![Project List](screenshots/project-list.png)
+
+### Session List
+
+![Session List](screenshots/session-list.png)
+
+### Conversation View
+
+![Conversation View](screenshots/session-view.png)
+
 ## Pages
 
 - **`/`** — Project list with session counts and last activity
